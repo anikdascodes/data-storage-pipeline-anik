@@ -62,26 +62,36 @@ check_output() {
     echo ""
 }
 
+# Determine base path (Docker vs Local)
+if [ -d "/app" ]; then
+    BASE_PATH="/app"
+else
+    BASE_PATH="."
+fi
+
+echo "Base path: $BASE_PATH"
+echo ""
+
 echo "1. Checking Hudi Tables..."
 echo "-----------------------------------"
-check_output "Seller Catalog Hudi Table" "/app/processed/seller_catalog_hudi" "hudi"
-check_output "Company Sales Hudi Table" "/app/processed/company_sales_hudi" "hudi"
-check_output "Competitor Sales Hudi Table" "/app/processed/competitor_sales_hudi" "hudi"
+check_output "Seller Catalog Hudi Table" "$BASE_PATH/processed/seller_catalog_hudi" "hudi"
+check_output "Company Sales Hudi Table" "$BASE_PATH/processed/company_sales_hudi" "hudi"
+check_output "Competitor Sales Hudi Table" "$BASE_PATH/processed/competitor_sales_hudi" "hudi"
 
 echo "2. Checking Recommendation Outputs..."
 echo "-----------------------------------"
-check_output "Recommendations CSV" "/app/processed/recommendations_csv" "csv"
+check_output "Recommendations CSV" "$BASE_PATH/processed/recommendations_csv" "csv"
 
 echo "3. Checking Quarantine Zone..."
 echo "-----------------------------------"
-if [ -d "/app/quarantine" ]; then
-    QUARANTINE_FILES=$(find /app/quarantine -type f -name "*.parquet" 2>/dev/null | wc -l)
+if [ -d "$BASE_PATH/quarantine" ]; then
+    QUARANTINE_FILES=$(find $BASE_PATH/quarantine -type f -name "*.parquet" 2>/dev/null | wc -l)
     if [ "$QUARANTINE_FILES" -gt 0 ]; then
         echo -e "${YELLOW}!${NC} Quarantine: $QUARANTINE_FILES file(s) found"
         echo "  └─ This indicates some records failed DQ checks"
 
         # List quarantine directories
-        for dir in /app/quarantine/*/; do
+        for dir in $BASE_PATH/quarantine/*/; do
             if [ -d "$dir" ]; then
                 dataset=$(basename "$dir")
                 count=$(find "$dir" -name "*.parquet" | wc -l)
@@ -100,13 +110,13 @@ echo ""
 
 echo "4. Storage Summary..."
 echo "-----------------------------------"
-if [ -d "/app/processed" ]; then
-    TOTAL_SIZE=$(du -sh /app/processed 2>/dev/null | cut -f1)
+if [ -d "$BASE_PATH/processed" ]; then
+    TOTAL_SIZE=$(du -sh $BASE_PATH/processed 2>/dev/null | cut -f1)
     echo "Total processed data size: $TOTAL_SIZE"
 fi
 
-if [ -d "/app/quarantine" ]; then
-    QUARANTINE_SIZE=$(du -sh /app/quarantine 2>/dev/null | cut -f1)
+if [ -d "$BASE_PATH/quarantine" ]; then
+    QUARANTINE_SIZE=$(du -sh $BASE_PATH/quarantine 2>/dev/null | cut -f1)
     echo "Total quarantine data size: $QUARANTINE_SIZE"
 fi
 echo ""
