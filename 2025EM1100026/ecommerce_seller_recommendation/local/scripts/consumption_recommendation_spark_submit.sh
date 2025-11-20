@@ -21,6 +21,6 @@ spark-submit \
   --conf spark.serializer=org.apache.spark.serializer.KryoSerializer \
   --conf spark.sql.legacy.timeParserPolicy=LEGACY \
   $BASE_DIR/src/consumption_recommendation.py \
-  --config $BASE_DIR/configs/ecomm_local.yml
+  --config $BASE_DIR/configs/ecomm_prod.yml
 
 echo "Consumption Layer - Recommendations Pipeline completed!"

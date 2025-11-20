@@ -77,7 +77,7 @@ def extract(spark: SparkSession, input_path: str) -> DataFrame:
         spark.read
         .schema(schema)
         .option("header", True)
-        .option("delimiter", ",")  # Comma-delimited for .csv files
+        .option("delimiter", "|")  # Pipe-delimited for .sv files
         .option("ignoreLeadingWhiteSpace", True)
         .option("ignoreTrailingWhiteSpace", True)
         .csv(input_path)
@@ -223,7 +223,10 @@ def load(valid_df: DataFrame, invalid_df: DataFrame, config: dict):
     - Invalid records → Quarantine zone (parquet)
     """
     hudi_path = config["competitor_sales"]["hudi_output_path"]
-    quarantine_path = config["competitor_sales"]["quarantine_path"]
+    
+    # Derive quarantine path from hudi path
+    base_dir = os.path.dirname(os.path.dirname(hudi_path))
+    quarantine_path = os.path.join(base_dir, "quarantine", "competitor_sales")
 
     # Create output directories
     os.makedirs(quarantine_path, exist_ok=True)

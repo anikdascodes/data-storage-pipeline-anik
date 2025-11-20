@@ -33,7 +33,6 @@ RUN mkdir -p /opt && \
 WORKDIR /app
 
 # Copy project files
-COPY pyproject.toml /app/
 COPY requirements.txt /app/
 
 # Install Python dependencies using pip (uv alternative for reliability)

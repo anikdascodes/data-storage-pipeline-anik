@@ -21,6 +21,6 @@ spark-submit \
   --conf spark.serializer=org.apache.spark.serializer.KryoSerializer \
   --conf spark.sql.legacy.timeParserPolicy=LEGACY \
   $BASE_DIR/src/etl_company_sales.py \
-  --config $BASE_DIR/configs/ecomm_local.yml
+  --config $BASE_DIR/configs/ecomm_prod.yml
 
 echo "Company Sales ETL Pipeline completed!"

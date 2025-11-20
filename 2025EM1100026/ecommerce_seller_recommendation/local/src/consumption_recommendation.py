@@ -18,6 +18,7 @@ import sys
 import logging
 import argparse
 import yaml
+import shutil
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql import functions as F
 from pyspark.sql import types as T
@@ -255,20 +256,36 @@ def load_to_csv(recommendations_df: DataFrame, output_path: str):
     output_dir = os.path.dirname(output_path)
     os.makedirs(output_dir, exist_ok=True)
 
-    # Write to CSV (coalesce to single partition for single CSV file)
-    recommendations_df.coalesce(1).write.mode("overwrite").option("header", True).csv(output_path)
+    # Use a temp directory for Spark CSV output
+    temp_dir = os.path.join(output_dir, "_temp_csv_output")
+    
+    # Remove temp directory if it exists
+    if os.path.exists(temp_dir):
+        shutil.rmtree(temp_dir)
+    
+    # Write to temp directory (coalesce to single partition for single CSV file)
+    recommendations_df.coalesce(1).write.mode("overwrite").option("header", True).csv(temp_dir)
 
-    logging.info("Recommendations written successfully")
-
-    # Find the actual CSV file and rename it
-    csv_files = [f for f in os.listdir(output_path) if f.endswith('.csv')]
+    # Find the actual CSV file in temp directory
+    csv_files = [f for f in os.listdir(temp_dir) if f.endswith('.csv') and not f.startswith('.')]
+    
     if csv_files:
-        actual_csv = os.path.join(output_path, csv_files[0])
-        final_csv = os.path.join(output_path, "seller_recommend_data.csv")
-        if os.path.exists(final_csv):
-            os.remove(final_csv)
-        os.rename(actual_csv, final_csv)
-        logging.info(f"Final CSV: {final_csv}")
+        source_csv = os.path.join(temp_dir, csv_files[0])
+        
+        # Remove existing output file if present
+        if os.path.exists(output_path):
+            os.remove(output_path)
+        
+        # Move CSV to final location
+        shutil.move(source_csv, output_path)
+        
+        # Clean up temp directory
+        shutil.rmtree(temp_dir)
+        
+        logging.info(f"Final CSV written successfully: {output_path}")
+    else:
+        logging.error("No CSV file generated in temp directory")
+        raise RuntimeError("CSV generation failed")
 
 
 # ---------------------------------------------------------------------------

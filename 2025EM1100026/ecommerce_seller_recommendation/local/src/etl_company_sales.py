@@ -198,7 +198,10 @@ def load(valid_df: DataFrame, invalid_df: DataFrame, config: dict):
     - Invalid records → Quarantine zone (parquet)
     """
     hudi_path = config["company_sales"]["hudi_output_path"]
-    quarantine_path = config["company_sales"]["quarantine_path"]
+    
+    # Derive quarantine path from hudi path
+    base_dir = os.path.dirname(os.path.dirname(hudi_path))
+    quarantine_path = os.path.join(base_dir, "quarantine", "company_sales")
 
     # Create output directories
     os.makedirs(quarantine_path, exist_ok=True)

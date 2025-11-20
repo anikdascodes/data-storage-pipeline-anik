@@ -8,17 +8,14 @@
 seller_catalog:
   input_path: "/app/raw/seller_catalog/seller_catalog_clean.csv"
   hudi_output_path: "/app/processed/seller_catalog_hudi/"
-  quarantine_path: "/app/quarantine/seller_catalog/"
 
 company_sales:
   input_path: "/app/raw/company_sales/company_sales_clean.csv"
   hudi_output_path: "/app/processed/company_sales_hudi/"
-  quarantine_path: "/app/quarantine/company_sales/"
 
 competitor_sales:
-  input_path: "/app/raw/competitor_sales/competitor_sales_clean.csv"
+  input_path: "/app/raw/competitor_sales/competitor_sales_clean.sv"
   hudi_output_path: "/app/processed/competitor_sales_hudi/"
-  quarantine_path: "/app/quarantine/competitor_sales/"
 
 recommendation:
   # Final consumption layer input/output
