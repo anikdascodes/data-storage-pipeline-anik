@@ -35,10 +35,10 @@ case $choice in
         fi
         
         echo "Building Docker image..."
-        docker-compose build
+        docker compose build
         
         echo "Running pipeline..."
-        docker-compose up
+        docker compose up
         
         echo ""
         echo "✅ Docker execution completed!"
