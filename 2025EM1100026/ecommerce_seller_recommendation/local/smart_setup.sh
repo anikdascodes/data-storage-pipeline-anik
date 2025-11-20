@@ -110,13 +110,13 @@ elif [ "$DOCKER_INSTALLED" = "true" ]; then
         1)
             echo ""
             echo "Starting Docker Full Installation..."
-            docker-compose -f docker-compose.smart.yml --profile full build
-            docker-compose -f docker-compose.smart.yml --profile full up -d
+            docker compose -f docker compose.smart.yml --profile full build
+            docker compose -f docker compose.smart.yml --profile full up -d
             echo ""
             echo -e "${GREEN}✓ Docker container is ready!${NC}"
             echo ""
             echo "To run the pipeline:"
-            echo "  docker-compose -f docker-compose.smart.yml exec ecommerce-recommendation-full bash"
+            echo "  docker compose -f docker compose.smart.yml exec ecommerce-recommendation-full bash"
             echo "  bash /app/scripts/run_all_pipelines.sh"
             ;;
         2)
@@ -125,13 +125,13 @@ elif [ "$DOCKER_INSTALLED" = "true" ]; then
                 echo "Using host Spark installation at: $SPARK_HOME"
                 export SPARK_HOME=${SPARK_HOME:-/opt/spark}
                 export JAVA_HOME=${JAVA_HOME:-/usr/lib/jvm/java-11-openjdk-amd64}
-                docker-compose -f docker-compose.smart.yml --profile slim build
-                docker-compose -f docker-compose.smart.yml --profile slim up -d
+                docker compose -f docker compose.smart.yml --profile slim build
+                docker compose -f docker compose.smart.yml --profile slim up -d
                 echo ""
                 echo -e "${GREEN}✓ Docker container is ready!${NC}"
                 echo ""
                 echo "To run the pipeline:"
-                echo "  docker-compose -f docker-compose.smart.yml exec ecommerce-recommendation-slim bash"
+                echo "  docker compose -f docker compose.smart.yml exec ecommerce-recommendation-slim bash"
                 echo "  bash /app/scripts/run_all_pipelines.sh"
             else
                 echo -e "${YELLOW}⚠ Spark not found on host. Installing locally first...${NC}"
@@ -139,13 +139,13 @@ elif [ "$DOCKER_INSTALLED" = "true" ]; then
                 source ~/.bashrc
                 export SPARK_HOME=${SPARK_HOME:-/opt/spark}
                 export JAVA_HOME=${JAVA_HOME:-/usr/lib/jvm/java-11-openjdk-amd64}
-                docker-compose -f docker-compose.smart.yml --profile slim build
-                docker-compose -f docker-compose.smart.yml --profile slim up -d
+                docker compose -f docker compose.smart.yml --profile slim build
+                docker compose -f docker compose.smart.yml --profile slim up -d
                 echo ""
                 echo -e "${GREEN}✓ Docker container is ready!${NC}"
                 echo ""
                 echo "To run the pipeline:"
-                echo "  docker-compose -f docker-compose.smart.yml exec ecommerce-recommendation-slim bash"
+                echo "  docker compose -f docker compose.smart.yml exec ecommerce-recommendation-slim bash"
                 echo "  bash /app/scripts/run_all_pipelines.sh"
             fi
             ;;

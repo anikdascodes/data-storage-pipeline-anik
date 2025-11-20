@@ -110,7 +110,7 @@ CSV Output (Recommendations)
 │   └── competitor_sales/
 │
 ├── Dockerfile                      # Docker image definition
-├── docker-compose.yml              # Docker orchestration
+├── docker compose.yml              # Docker orchestration
 ├── pyproject.toml                  # uv project configuration
 ├── requirements.txt                # Python dependencies
 └── README.md                       # This file
@@ -148,7 +148,7 @@ CSV Output (Recommendations)
 
 2. **Build Docker image:**
    ```bash
-   docker-compose build
+   docker compose build
    ```
    This will:
    - Install Java 11
@@ -158,12 +158,12 @@ CSV Output (Recommendations)
 
 3. **Start the container:**
    ```bash
-   docker-compose up -d
+   docker compose up -d
    ```
 
 4. **Access the container:**
    ```bash
-   docker-compose exec ecommerce-recommendation bash
+   docker compose exec ecommerce-recommendation bash
    ```
 
 ### Option 2: Local Installation

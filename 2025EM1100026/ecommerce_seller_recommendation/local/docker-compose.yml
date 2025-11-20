@@ -20,10 +20,30 @@ services:
     working_dir: /app
     stdin_open: true
     tty: true
-    command: /bin/bash
+    # Note: Container will auto-execute all pipelines on startup
+    # To run in interactive mode instead: docker compose run ecommerce-recommendation bash
 
-# Usage Instructions:
-# Build: docker-compose build
-# Run: docker-compose up -d
-# Execute: docker-compose exec ecommerce-recommendation bash
-# Stop: docker-compose down
+# ============================================================
+# Reviewer Quick Start:
+# ============================================================
+# 1. Build and run (auto-executes all pipelines):
+#    docker compose up --build
+#
+# 2. Verify outputs (in another terminal):
+#    docker compose exec ecommerce-recommendation bash /app/verify_outputs.sh
+#
+# 3. Stop container:
+#    docker compose down
+#
+# ============================================================
+# Advanced Usage:
+# ============================================================
+# Interactive mode (no auto-execution):
+#    docker compose run --rm ecommerce-recommendation bash
+#
+# View logs:
+#    docker compose logs -f
+#
+# Clean everything:
+#    docker compose down -v && rm -rf processed/ quarantine/
+# ============================================================

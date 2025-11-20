@@ -69,9 +69,9 @@ bash scripts/run_all_pipelines.sh
 **Best for:** Reviewers who prefer isolated environments
 
 ```bash
-docker-compose build
-docker-compose up -d
-docker-compose exec ecommerce-recommendation bash
+docker compose build
+docker compose up -d
+docker compose exec ecommerce-recommendation bash
 bash /app/scripts/run_all_pipelines.sh
 ```
 
@@ -142,8 +142,8 @@ Select installation method (1-4)
 
 | File | Purpose | Time | When to Use |
 |------|---------|------|-------------|
-| `docker-compose.yml` | Full Docker | 10-15 min | Traditional approach |
-| `docker-compose.smart.yml` | Smart Docker | 2-15 min | Choose full or slim |
+| `docker compose.yml` | Full Docker | 10-15 min | Traditional approach |
+| `docker compose.smart.yml` | Smart Docker | 2-15 min | Choose full or slim |
 | `Dockerfile` | Full image | 10-15 min | Complete isolation |
 | `Dockerfile.slim` | Slim image | 2-3 min | Use host Spark |
 
