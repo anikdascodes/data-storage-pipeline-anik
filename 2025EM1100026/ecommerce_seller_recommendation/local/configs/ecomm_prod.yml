@@ -6,23 +6,23 @@
 # All paths are local paths (Hudi tables for ETL, CSV for consumption)
 
 seller_catalog:
-  input_path: "/home/user/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local/raw/seller_catalog/seller_catalog_clean.csv"
-  hudi_output_path: "/home/user/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local/processed/seller_catalog_hudi/"
-  quarantine_path: "/home/user/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local/quarantine/seller_catalog/"
+  input_path: "/workspaces/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local/raw/seller_catalog/seller_catalog_clean.csv"
+  hudi_output_path: "/workspaces/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local/processed/seller_catalog_hudi/"
+  quarantine_path: "/workspaces/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local/quarantine/seller_catalog/"
 
 company_sales:
-  input_path: "/home/user/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local/raw/company_sales/company_sales_clean.csv"
-  hudi_output_path: "/home/user/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local/processed/company_sales_hudi/"
-  quarantine_path: "/home/user/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local/quarantine/company_sales/"
+  input_path: "/workspaces/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local/raw/company_sales/company_sales_clean.csv"
+  hudi_output_path: "/workspaces/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local/processed/company_sales_hudi/"
+  quarantine_path: "/workspaces/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local/quarantine/company_sales/"
 
 competitor_sales:
-  input_path: "/home/user/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local/raw/competitor_sales/competitor_sales_clean.csv"
-  hudi_output_path: "/home/user/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local/processed/competitor_sales_hudi/"
-  quarantine_path: "/home/user/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local/quarantine/competitor_sales/"
+  input_path: "/workspaces/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local/raw/competitor_sales/competitor_sales_clean.csv"
+  hudi_output_path: "/workspaces/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local/processed/competitor_sales_hudi/"
+  quarantine_path: "/workspaces/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local/quarantine/competitor_sales/"
 
 recommendation:
   # Final consumption layer input/output
-  seller_catalog_hudi: "/home/user/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local/processed/seller_catalog_hudi/"
-  company_sales_hudi: "/home/user/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local/processed/company_sales_hudi/"
-  competitor_sales_hudi: "/home/user/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local/processed/competitor_sales_hudi/"
-  output_csv: "/home/user/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local/processed/recommendations_csv/seller_recommend_data.csv"
+  seller_catalog_hudi: "/workspaces/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local/processed/seller_catalog_hudi/"
+  company_sales_hudi: "/workspaces/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local/processed/company_sales_hudi/"
+  competitor_sales_hudi: "/workspaces/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local/processed/competitor_sales_hudi/"
+  output_csv: "/workspaces/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local/processed/recommendations_csv/seller_recommend_data.csv"
