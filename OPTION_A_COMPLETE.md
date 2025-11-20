@@ -257,18 +257,27 @@ docker compose exec ecommerce-recommendation bash /app/verify_outputs.sh
    - Clear usage instructions
    - Modern docker compose syntax
 
-3. **scripts/run_pipeline_direct.sh**
+3. **configs/ecomm_prod.yml** ⭐ **CRITICAL FIX**
+   - Changed all paths from /workspaces/ to /app/
+   - Enables Docker execution
+   - Works with auto-detected paths in scripts
+
+4. **scripts/run_pipeline_direct.sh**
    - Dynamic path resolution
    - Works in any environment
 
-4. **smart_setup.sh**
+5. **All spark-submit scripts**
+   - Auto-detect BASE_DIR (/app in Docker, dynamic elsewhere)
+   - Works in Docker and local environments
+
+6. **smart_setup.sh**
    - Modern docker compose commands
 
-5. **All Documentation**
+7. **All Documentation**
    - Updated docker compose syntax
    - Clearer instructions
 
-**Total:** 10+ files improved
+**Total:** 12+ files improved
 
 ---
 
