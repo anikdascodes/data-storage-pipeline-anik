@@ -6,7 +6,7 @@ Student: MSc Data Science & AI
 Roll No: 2025EM1100026
 
 Pipeline Flow:
-- Extract competitor sales data from CSV
+- Extract competitor sales data from SV (pipe-delimited) file
 - Clean data (trim, normalize, type conversion, deduplicate)
 - Apply DQ checks
 - Move invalid records to quarantine zone
@@ -59,7 +59,7 @@ def load_config(config_path: str) -> dict:
 # ---------------------------------------------------------------------------
 def extract(spark: SparkSession, input_path: str) -> DataFrame:
     """
-    Extract competitor sales data from CSV
+    Extract competitor sales data from SV file (pipe-delimited format)
     """
     logging.info(f"Extracting data from: {input_path}")
 
@@ -77,6 +77,7 @@ def extract(spark: SparkSession, input_path: str) -> DataFrame:
         spark.read
         .schema(schema)
         .option("header", True)
+        .option("delimiter", "|")  # Pipe-delimited for .sv files
         .option("ignoreLeadingWhiteSpace", True)
         .option("ignoreTrailingWhiteSpace", True)
         .csv(input_path)
