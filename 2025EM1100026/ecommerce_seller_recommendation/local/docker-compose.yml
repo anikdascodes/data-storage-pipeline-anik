@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  ecommerce-recommendation:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ecommerce_recommendation_system
+    image: ecommerce-recommendation:latest
+    volumes:
+      - ./configs:/app/configs
+      - ./src:/app/src
+      - ./scripts:/app/scripts
+      - ./raw:/app/raw
+      - ./processed:/app/processed
+      - ./quarantine:/app/quarantine
+      - ./logs:/app/logs
+    environment:
+      - SPARK_HOME=/opt/spark
+      - JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+      - PYSPARK_PYTHON=/usr/bin/python3
+    working_dir: /app
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+# Usage Instructions:
+# Build: docker-compose build
+# Run: docker-compose up -d
+# Execute: docker-compose exec ecommerce-recommendation bash
+# Stop: docker-compose down

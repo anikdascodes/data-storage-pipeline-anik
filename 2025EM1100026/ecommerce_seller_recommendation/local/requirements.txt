@@ -1,0 +1,7 @@
+# Python dependencies for E-commerce Recommendation System
+# Generated for uv package manager
+# Student: MSc Data Science & AI, Roll No: 2025EM1100026
+
+pyspark==3.5.0
+pyyaml>=6.0
+pandas>=2.0.0

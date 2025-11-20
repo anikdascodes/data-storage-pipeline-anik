@@ -1,0 +1,38 @@
+# Large input datasets
+input_data_sets/
+input_data_sets.zip
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+
+# Spark
+spark-warehouse/
+metastore_db/
+derby.log
+*.log
+
+# Output directories
+*/processed/
+*/quarantine/
+*/logs/
+
+# Hudi
+.hoodie/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
