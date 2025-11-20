@@ -2,6 +2,9 @@
 input_data_sets/
 input_data_sets.zip
 
+# Assignment submission zip (too large for GitHub)
+*_assignment_submission.zip
+
 # Python
 __pycache__/
 *.py[cod]
