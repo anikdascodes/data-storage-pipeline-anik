@@ -51,8 +51,17 @@ RUN python3 -m pip install --upgrade pip && \
 # Copy the entire project
 COPY . /app/
 
+# Make scripts executable
+RUN chmod +x /app/docker-entrypoint.sh && \
+    chmod +x /app/verify_outputs.sh && \
+    chmod +x /app/scripts/*.sh && \
+    find /app -name "*.sh" -type f -exec sed -i 's/\r$//' {} \;
+
 # Create necessary directories
 RUN mkdir -p /app/processed /app/quarantine /app/logs
 
-# Default command
-CMD ["/bin/bash"]
+# Set entrypoint
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
+
+# Default command (can be overridden)
+CMD ["auto"]

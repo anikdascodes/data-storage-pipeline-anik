@@ -33,7 +33,7 @@
 
 2. **Build Docker image (first time only):**
    ```bash
-   docker-compose build
+   docker compose build
    ```
    This will take 10-15 minutes to:
    - Install Java 11
@@ -43,12 +43,12 @@
 
 3. **Start container:**
    ```bash
-   docker-compose up -d
+   docker compose up -d
    ```
 
 4. **Access container:**
    ```bash
-   docker-compose exec ecommerce-recommendation bash
+   docker compose exec ecommerce-recommendation bash
    ```
 
 5. **Run all pipelines:**
@@ -72,7 +72,7 @@
 7. **Exit and stop container:**
    ```bash
    exit
-   docker-compose down
+   docker compose down
    ```
 
 ---
@@ -200,7 +200,7 @@ To test data quality checks and quarantine functionality:
 ### Issue: Docker build fails downloading Spark
 **Solution:** The Dockerfile now uses a faster mirror with fallback. If still failing, check your internet connection or try:
 ```bash
-docker-compose build --no-cache
+docker compose build --no-cache
 ```
 
 ### Issue: "spark-submit: command not found"
@@ -267,11 +267,11 @@ quarantine/
 
 ```bash
 # Docker Method
-docker-compose build                                  # Build image (first time)
-docker-compose up -d                                   # Start container
-docker-compose exec ecommerce-recommendation bash      # Access container
+docker compose build                                  # Build image (first time)
+docker compose up -d                                   # Start container
+docker compose exec ecommerce-recommendation bash      # Access container
 bash /app/scripts/run_all_pipelines.sh                # Run pipelines
-docker-compose down                                    # Stop container
+docker compose down                                    # Stop container
 
 # Local Method
 bash scripts/install_spark_local.sh                   # Install (first time)
@@ -294,8 +294,8 @@ bash scripts/consumption_recommendation_spark_submit.sh # Pipeline 4
 1. If you have Docker:
    ```bash
    cd 2025EM1100026/ecommerce_seller_recommendation/local
-   docker-compose build && docker-compose up -d
-   docker-compose exec ecommerce-recommendation bash -c "cd /app && bash scripts/run_all_pipelines.sh"
+   docker compose build && docker compose up -d
+   docker compose exec ecommerce-recommendation bash -c "cd /app && bash scripts/run_all_pipelines.sh"
    ```
 
 2. If you don't have Docker but have Spark:

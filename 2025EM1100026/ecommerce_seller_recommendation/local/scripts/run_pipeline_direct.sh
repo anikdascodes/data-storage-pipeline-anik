@@ -12,7 +12,9 @@ echo "Student: 2025EM1100026"
 echo "=============================================="
 echo ""
 
-BASE_DIR="/home/user/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local"
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BASE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$BASE_DIR"
 
 # Install PySpark and dependencies if not already installed
