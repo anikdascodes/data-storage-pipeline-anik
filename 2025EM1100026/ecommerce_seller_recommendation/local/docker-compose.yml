@@ -15,7 +15,7 @@ services:
       - ./logs:/app/logs
     environment:
       - SPARK_HOME=/opt/spark
-      - JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+      - JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
       - PYSPARK_PYTHON=/usr/bin/python3
     working_dir: /app
     stdin_open: true

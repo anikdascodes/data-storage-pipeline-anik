@@ -77,7 +77,7 @@ def extract(spark: SparkSession, input_path: str) -> DataFrame:
         spark.read
         .schema(schema)
         .option("header", True)
-        .option("delimiter", "|")  # Pipe-delimited for .sv files
+        .option("delimiter", ",")  # Comma-delimited for .csv files
         .option("ignoreLeadingWhiteSpace", True)
         .option("ignoreTrailingWhiteSpace", True)
         .csv(input_path)
