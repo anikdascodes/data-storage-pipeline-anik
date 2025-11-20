@@ -120,6 +120,19 @@ Following the assignment requirements:
 
 ## How to Run
 
+### 🚀 Quick Start (For Teacher Evaluation)
+
+**The fastest way to run the assignment:**
+
+```bash
+bash RUN_ASSIGNMENT.sh
+```
+
+This interactive script offers three options:
+1. **Docker execution** (recommended - no setup required)
+2. **Local execution** (requires Spark installation)
+3. **Complete demo** (showcases both clean and dirty data processing)
+
 ### Option 1: Docker (Recommended)
 
 The easiest way to run all pipelines with a single command.
@@ -264,6 +277,54 @@ recommendation:
   - Seller Catalog: CSV (comma-delimited)
   - Company Sales: CSV (comma-delimited)
   - Competitor Sales: **SV (pipe-delimited)** - uses `|` as delimiter instead of comma
+
+---
+
+## 🔍 Data Quality Framework Demonstration
+
+This assignment includes both **CLEAN** and **DIRTY** datasets to showcase the power of our data quality framework:
+
+### Clean Data Processing (Production Mode)
+- **Configuration:** `configs/ecomm_local.yml`
+- **Purpose:** Production-ready processing with high-quality data
+- **Expected Result:** All records processed successfully, empty quarantine zone
+
+### Dirty Data Processing (DQ Framework Demo)
+- **Configuration:** `configs/ecomm_dirty.yml`
+- **Purpose:** Demonstrates data quality validation and quarantine handling
+- **Data Issues Include:**
+  - **Seller Catalog:** Negative stock quantities (-6)
+  - **Company Sales:** Missing item_ids, invalid dates (2025-13-45), future dates (2030-01-01)
+  - **Competitor Sales:** Invalid date formats (2025-15-78)
+
+### Quarantine Zone Analysis
+
+When processing dirty data, invalid records are automatically:
+1. **Identified** by DQ validation rules
+2. **Isolated** to quarantine zone with failure reasons
+3. **Logged** for data steward review
+4. **Excluded** from downstream processing
+
+**Example Quarantine Record:**
+```json
+{
+  "original_record": {"seller_id": "S128", "item_id": "I10006", "stock_qty": -6},
+  "dq_failure_reason": "stock_qty_negative",
+  "quarantine_timestamp": "2024-01-15T10:30:00Z"
+}
+```
+
+### Running Both Scenarios
+
+**Complete Demo (Recommended for Evaluation):**
+```bash
+bash run_complete_demo.sh
+```
+
+This will:
+1. Process clean data → Show production-ready results
+2. Process dirty data → Demonstrate quarantine zone in action
+3. Compare results → Highlight DQ framework effectiveness
 
 ---
 
