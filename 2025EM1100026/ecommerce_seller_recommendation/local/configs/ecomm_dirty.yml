@@ -1,0 +1,28 @@
+# E-commerce Seller Recommendation System Configuration - DIRTY DATA DEMO
+# Student: MSc Data Science & AI
+# Roll No: 2025EM1100026
+
+# This configuration uses DIRTY datasets to demonstrate the power of our DQ framework
+# and quarantine zone handling
+
+seller_catalog:
+  input_path: "./raw/seller_catalog/seller_catalog_dirty.csv"
+  hudi_output_path: "./processed/seller_catalog_hudi/"
+  quarantine_path: "./quarantine/seller_catalog/"
+
+company_sales:
+  input_path: "./raw/company_sales/company_sales_dirty.csv"
+  hudi_output_path: "./processed/company_sales_hudi/"
+  quarantine_path: "./quarantine/company_sales/"
+
+competitor_sales:
+  input_path: "./raw/competitor_sales/competitor_sales_dirty.csv"
+  hudi_output_path: "./processed/competitor_sales_hudi/"
+  quarantine_path: "./quarantine/competitor_sales/"
+
+recommendation:
+  # Final consumption layer input/output
+  seller_catalog_hudi: "./processed/seller_catalog_hudi/"
+  company_sales_hudi: "./processed/company_sales_hudi/"
+  competitor_sales_hudi: "./processed/competitor_sales_hudi/"
+  output_csv: "./processed/recommendations_csv/seller_recommend_data.csv"
