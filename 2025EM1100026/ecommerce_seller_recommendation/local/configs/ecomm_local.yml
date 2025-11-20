@@ -16,7 +16,7 @@ company_sales:
   quarantine_path: "/workspace/project/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local/quarantine/company_sales/"
 
 competitor_sales:
-  input_path: "/workspace/project/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local/raw/competitor_sales/competitor_sales_clean.csv"
+  input_path: "/workspace/project/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local/raw/competitor_sales/competitor_sales_clean.sv"
   hudi_output_path: "/workspace/project/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local/processed/competitor_sales_hudi/"
   quarantine_path: "/workspace/project/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local/quarantine/competitor_sales/"
 

@@ -108,8 +108,8 @@ else
     exit 1
 fi
 
-if [ -f "/app/raw/competitor_sales/competitor_sales_clean.csv" ]; then
-    print_success "Competitor sales data found"
+if [ -f "/app/raw/competitor_sales/competitor_sales_clean.sv" ]; then
+    print_success "Competitor sales data found (pipe-delimited .sv format)"
 else
     print_error "Competitor sales data not found"
     exit 1
