@@ -42,9 +42,9 @@ RUN python3 -m pip install --upgrade pip && \
 # Copy the entire project
 COPY . /app/
 
-# Make scripts executable
+# Make scripts executable and convert line endings (Windows -> Unix)
 RUN chmod +x /app/docker-entrypoint.sh && \
-    chmod +x /app/verify_outputs.sh && \
+    chmod +x /app/RUN_ASSIGNMENT.sh && \
     chmod +x /app/scripts/*.sh && \
     find /app -name "*.sh" -type f -exec sed -i 's/\r$//' {} \;
 

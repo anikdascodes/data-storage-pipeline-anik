@@ -5,18 +5,18 @@
 
 ## Overview
 
-This assignment implements a data pipeline for an e-commerce recommendation system. The goal is to help sellers identify which top-selling items are missing from their catalogs so they can improve revenue.
+This assignment implements a data pipeline for an e-commerce recommendation system. The objective is to identify top-selling items missing from seller catalogs to improve revenue opportunities.
 
 The pipeline processes three datasets:
-- Seller catalog data (what each seller currently sells)
+- Seller catalog data (current inventory per seller)
 - Company sales data (internal sales performance)
 - Competitor sales data (market-wide sales trends)
 
-It then generates personalized recommendations for each seller, showing them which popular items they don't currently stock along with expected revenue projections.
+The system generates personalized recommendations for each seller, identifying popular items not currently in stock along with expected revenue projections.
 
-## What This Pipeline Does
+## Pipeline Functionality
 
-1. **Data Ingestion & Cleaning**: Reads raw CSV/SV files, cleans the data, and validates quality
+1. **Data Ingestion & Cleaning**: Reads raw CSV/SV files, performs data cleaning, and validates quality
 2. **Storage**: Stores cleaned data in Apache Hudi tables (supports schema evolution and incremental updates)
 3. **Quality Control**: Separates invalid records into a quarantine zone for review
 4. **Analysis**: Identifies top 10 selling items per category across all sales channels
@@ -28,7 +28,7 @@ The easiest way to run this assignment:
 
 ```bash
 cd ecommerce_seller_recommendation/local
-docker compose up
+docker compose up --build
 ```
 
 This will:
@@ -37,45 +37,71 @@ This will:
 - Execute the recommendation generation
 - Output results to the `processed/` directory
 
-Expected runtime: 5-10 minutes
+Expected runtime: 5-10 minutes (first build takes longer)
+
+**Note:** If you've already built the image, you can run without `--build`:
+```bash
+docker compose up
+```
 
 ## Project Structure
 
 ```
-2025EM1100026/ecommerce_seller_recommendation/local/
+local/
+├── .gitignore
+├── Dockerfile                                   # Container definition
+├── docker-compose.yml                           # Docker orchestration
+├── docker-entrypoint.sh                         # Container startup script
+├── RUN_ASSIGNMENT.sh                            # Interactive execution menu
+├── requirements.txt                             # Python dependencies
+├── README.md                                    # This file
 │
-├── configs/
-│   └── ecomm_prod.yml              # Main configuration file (paths only)
+├── configs/                                     # YAML configurations
+│   ├── ecomm_prod.yml                          # Production (clean data)
+│   ├── ecomm_local.yml                         # Local testing
+│   └── ecomm_dirty.yml                         # Demo (with DQ issues)
 │
-├── src/                            # Source code
-│   ├── etl_seller_catalog.py      # Pipeline 1: Process seller catalogs
-│   ├── etl_company_sales.py       # Pipeline 2: Process company sales
-│   ├── etl_competitor_sales.py    # Pipeline 3: Process competitor sales
-│   └── consumption_recommendation.py  # Pipeline 4: Generate recommendations
+├── src/                                         # Python ETL pipelines
+│   ├── etl_seller_catalog.py                   # Pipeline 1: Seller catalogs
+│   ├── etl_company_sales.py                    # Pipeline 2: Company sales
+│   ├── etl_competitor_sales.py                 # Pipeline 3: Competitor sales
+│   └── consumption_recommendation.py            # Pipeline 4: Recommendations
 │
-├── scripts/                        # Spark submit scripts
+├── scripts/                                     # Spark submit wrappers
 │   ├── etl_seller_catalog_spark_submit.sh
 │   ├── etl_company_sales_spark_submit.sh
 │   ├── etl_competitor_sales_spark_submit.sh
 │   ├── consumption_recommendation_spark_submit.sh
-│   └── run_all_pipelines.sh       # Runs all 4 in sequence
+│   └── run_all_pipelines.sh                    # Runs all 4 in sequence
 │
-├── raw/                            # Input data
+└── raw/                                         # Input data files
+    ├── DATA_FILES_NOTE.md
+    ├── seller_catalog/
+    │   ├── seller_catalog_clean.csv
+    │   └── seller_catalog_dirty.csv
+    ├── company_sales/
+    │   ├── company_sales_clean.csv
+    │   └── company_sales_dirty.csv
+    └── competitor_sales/
+        ├── competitor_sales_clean.csv
+        ├── competitor_sales_clean.sv            # Pipe-delimited
+        ├── competitor_sales_dirty.csv
+        └── competitor_sales_dirty.sv            # Pipe-delimited
+
+Generated during execution:
+├── processed/                                   # Output directory
+│   ├── seller_catalog_hudi/                    # Hudi table
+│   ├── company_sales_hudi/                     # Hudi table
+│   ├── competitor_sales_hudi/                  # Hudi table
+│   └── recommendations_csv/
+│       └── seller_recommend_data.csv           # Final output
+│
+├── quarantine/                                  # Invalid records (if any)
 │   ├── seller_catalog/
-│   │   ├── seller_catalog_clean.csv
-│   │   └── seller_catalog_dirty.csv
 │   ├── company_sales/
-│   │   ├── company_sales_clean.csv
-│   │   └── company_sales_dirty.csv
 │   └── competitor_sales/
-│       ├── competitor_sales_clean.sv    # Pipe-delimited file
-│       └── competitor_sales_dirty.sv
 │
-├── Dockerfile                      # Container setup
-├── docker-compose.yml              # Orchestration config
-├── requirements.txt                # Python dependencies
-├── RUN_ASSIGNMENT.sh               # Interactive execution menu
-└── README.md                       # This file
+└── logs/                                        # Spark logs
 ```
 
 ## Configuration File
@@ -109,37 +135,39 @@ recommendation:
 
 ```bash
 cd ecommerce_seller_recommendation/local
-docker compose up
+docker compose up --build
 ```
 
-This handles everything automatically - no need to install Spark or Java locally.
+**First time:** Builds image and runs all pipelines (5-10 minutes)  
+**Subsequent runs:** Use `docker compose up` without `--build` (2-3 minutes)
 
-### Method 2: Using the Helper Script
+To stop: `docker compose down`
+
+### Method 2: Interactive Script
 
 ```bash
 cd ecommerce_seller_recommendation/local
 bash RUN_ASSIGNMENT.sh
 ```
 
-This gives you a menu with options:
-1. Run with Docker
-2. Run locally (requires Spark installation)
-3. Run demo with dirty data
-4. Verify outputs
+Provides a menu:
+1. Run with Docker (recommended)
+2. Run locally (requires Spark 3.5.0 + Java 21)
 
 ### Method 3: Manual Execution
 
-If you have Spark 3.5.0 installed locally:
+If you have Spark installed:
 
 ```bash
 cd ecommerce_seller_recommendation/local
 
-# Run ETL pipelines
+# Run all at once
+bash scripts/run_all_pipelines.sh
+
+# Or run individually
 bash scripts/etl_seller_catalog_spark_submit.sh
 bash scripts/etl_company_sales_spark_submit.sh  
 bash scripts/etl_competitor_sales_spark_submit.sh
-
-# Generate recommendations
 bash scripts/consumption_recommendation_spark_submit.sh
 ```
 
@@ -195,7 +223,7 @@ All rejected records go to the quarantine zone with a reason code.
 
 ## Output Files
 
-After running the pipeline, you'll find:
+After running the pipeline, the following outputs are generated:
 
 ### Hudi Tables (Gold Layer)
 Location: `/app/processed/`
@@ -222,8 +250,8 @@ S001,I10234,Samsung Galaxy S24,Electronics,89999.00,245,22049755.00
 S002,I15678,Dell XPS 15,Electronics,125000.00,156,19500000.00
 ```
 
-Columns explained:
-- `seller_id`: Which seller should consider this item
+Column descriptions:
+- `seller_id`: Target seller for this recommendation
 - `item_id`, `item_name`, `category`: Product details
 - `market_price`: Current selling price in the market
 - `expected_units_sold`: Projected sales volume (calculated from historical data)
@@ -290,8 +318,15 @@ expected_revenue = expected_units_sold × market_price
 
 ## Common Issues & Solutions
 
-### Docker Build Takes Long
-First build can take 5-10 minutes as it downloads Java, Spark, and dependencies. Subsequent builds use cache and are much faster.
+### Docker Build Duration
+Initial build requires 5-10 minutes to download Java, Spark, and dependencies. Subsequent builds utilize cache and complete faster.
+
+**Note:** To rebuild from scratch:
+```bash
+docker compose down
+docker compose build --no-cache
+docker compose up
+```
 
 ### Permission Errors on Scripts
 If you get "permission denied" errors:
@@ -300,15 +335,26 @@ chmod +x scripts/*.sh
 chmod +x *.sh
 ```
 
+### Container Keeps Running
+To stop and remove the container:
+```bash
+docker compose down
+```
+
+To check logs while running:
+```bash
+docker logs ecommerce_recommendation_system -f
+```
+
 ### CSV Output is a Directory
-Spark naturally writes CSV as a directory with multiple part files. The code handles this automatically by:
+Spark naturally writes CSV as a directory with multiple part files. The implementation handles this by:
 1. Writing to a temp directory
 2. Finding the actual CSV file (ignoring metadata)
 3. Moving it to the final single-file location
 4. Cleaning up temp files
 
 ### Missing Spark Packages
-The scripts download Hudi and Hadoop packages automatically during `spark-submit`. Ensure you have internet connectivity on first run.
+The scripts download Hudi and Hadoop packages automatically during `spark-submit`. Internet connectivity is required on first run.
 
 ## Assignment Compliance Notes
 
@@ -330,9 +376,9 @@ With the provided sample data (clean dataset):
 - Company sales: ~1000 records  
 - Competitor sales: ~800 records
 - Expected recommendations: ~2000 rows
-- Total runtime: 5-10 minutes (mostly Spark initialization)
+- Total runtime: 5-10 minutes (primarily Spark initialization)
 
-The dirty dataset includes intentional data quality issues to demonstrate quarantine handling.
+The dirty dataset contains intentional data quality issues to demonstrate quarantine handling.
 
 ## Medallion Architecture Diagram
 
@@ -375,7 +421,7 @@ The dirty dataset includes intentional data quality issues to demonstrate quaran
 
 ## Recommendation Algorithm
 
-The system uses the following logic to generate recommendations:
+The system implements the following logic to generate recommendations:
 
 1. **Aggregate Sales Data**
    - Combine company sales and competitor sales by item_id
@@ -387,8 +433,8 @@ The system uses the following logic to generate recommendations:
    - Select top 10 items per category
 
 3. **Find Gaps in Seller Catalogs**
-   - For each seller, compare their catalog against top 10 items
-   - Identify items they are NOT currently selling
+   - For each seller, compare catalog against top 10 items
+   - Identify items not currently in seller inventory
 
 4. **Calculate Revenue Projections**
    ```python
