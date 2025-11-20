@@ -4,7 +4,13 @@
 # Student: MSc Data Science & AI, Roll No: 2025EM1100026
 
 # Set the base directory
-BASE_DIR="/workspaces/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local"
+# Set the base directory (auto-detect: Docker uses /app, otherwise get from script location)
+if [ -d "/app" ] && [ -f "/app/configs/ecomm_prod.yml" ]; then
+    BASE_DIR="/app"
+else
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    BASE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+fi
 
 echo "Starting Consumption Layer - Recommendations Pipeline..."
 echo "Base Directory: $BASE_DIR"
