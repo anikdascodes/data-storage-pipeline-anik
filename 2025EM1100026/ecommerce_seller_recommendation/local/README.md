@@ -38,6 +38,35 @@ This pipeline helps sellers identify revenue opportunities by recommending the t
 - **Data Quality Framework:** Validation rules with quarantine zone for invalid records
 - **Incremental Processing:** Hudi tables support upserts and schema evolution
 
+#### Medallion Architecture Implementation Details
+
+Our implementation follows the industry-standard medallion architecture:
+
+- **Bronze Layer (Raw Zone):**
+  - Location: `raw/` directory
+  - Format: CSV and SV files as received from source systems
+  - Purpose: Immutable landing zone for raw data
+  - Files: seller_catalog_clean.csv, company_sales_clean.csv, competitor_sales_clean.sv
+
+- **Silver Layer (Cleaned/Validated Zone):**
+  - Location: `processed/*_hudi/` directories
+  - Format: Apache Hudi tables (Parquet-based)
+  - Purpose: Cleaned, validated, and deduplicated data ready for analytics
+  - Features: Schema enforcement, data quality checks passed, ACID transactions
+  - Tables: seller_catalog_hudi, company_sales_hudi, competitor_sales_hudi
+
+- **Gold Layer (Consumption-Ready Zone):**
+  - Location: `processed/recommendations_csv/`
+  - Format: CSV files optimized for business consumption
+  - Purpose: Business-ready datasets with derived metrics and aggregations
+  - Output: seller_recommend_data.csv with actionable recommendations
+
+Each layer serves a specific purpose with increasing data quality and business value. This architecture enables:
+- **Separation of Concerns:** Raw data preservation independent of transformations
+- **Data Quality:** Progressive quality improvement through layers
+- **Reproducibility:** Ability to rebuild downstream layers from upstream data
+- **Debugging:** Easy identification of where issues occur in the pipeline
+
 ---
 
 ## Project Structure
@@ -218,7 +247,7 @@ company_sales:
   quarantine_path: "/app/quarantine/company_sales/"
 
 competitor_sales:
-  input_path: "/app/raw/competitor_sales/competitor_sales_clean.csv"
+  input_path: "/app/raw/competitor_sales/competitor_sales_clean.sv"
   hudi_output_path: "/app/processed/competitor_sales_hudi/"
   quarantine_path: "/app/quarantine/competitor_sales/"
 
@@ -229,7 +258,12 @@ recommendation:
   output_csv: "/app/processed/recommendations_csv/seller_recommend_data.csv"
 ```
 
-**Note:** Paths use `/app/` for Docker environment. Shell scripts automatically detect the environment and adjust paths for local execution.
+**Notes:**
+- Paths use `/app/` for Docker environment. Shell scripts automatically detect the environment and adjust paths for local execution.
+- **File Formats:**
+  - Seller Catalog: CSV (comma-delimited)
+  - Company Sales: CSV (comma-delimited)
+  - Competitor Sales: **SV (pipe-delimited)** - uses `|` as delimiter instead of comma
 
 ---
 
@@ -307,7 +341,7 @@ recommendation:
 ### 3. ETL Pipeline: Competitor Sales
 
 **File:** `src/etl_competitor_sales.py`
-**Input:** `raw/competitor_sales/competitor_sales_clean.csv`
+**Input:** `raw/competitor_sales/competitor_sales_clean.sv` (pipe-delimited format)
 
 **Input Schema:**
 - seller_id (STRING) - Competitor seller identifier
@@ -486,6 +520,57 @@ hudi_options = {
 - **Copy-On-Write:** Optimized for read-heavy workloads
 - **Schema Evolution:** Automatically handles schema changes
 - **Overwrite Mode:** Final output overwrites previous data
+
+#### Schema Evolution Support
+
+Our Apache Hudi implementation provides robust schema evolution capabilities:
+
+**How Schema Evolution Works:**
+
+Apache Hudi automatically handles schema changes without requiring pipeline modifications:
+
+1. **Adding New Columns:**
+   - When source data includes new columns, Hudi automatically merges the schema
+   - Existing records will have NULL values for new columns
+   - No code changes required in the ETL pipeline
+   - Example: If `competitor_sales_clean.sv` adds a new column `discount_percentage`, Hudi will automatically include it in the table schema
+
+2. **Column Type Evolution:**
+   - Hudi supports compatible type promotions (e.g., INT → LONG, FLOAT → DOUBLE)
+   - Ensures backward compatibility with existing queries
+   - Schema validation happens during write operations
+
+3. **Schema Compatibility:**
+   - Hudi maintains schema versions in the table metadata
+   - Each commit tracks the schema used for that write operation
+   - Enables schema auditing and rollback if needed
+
+**Benefits in Our Pipeline:**
+
+- **No Downtime:** Schema changes don't require pipeline restarts
+- **Backward Compatibility:** Existing data remains queryable after schema changes
+- **Future-Proof:** Pipeline can handle evolving data sources without modifications
+- **ACID Guarantees:** Schema evolution maintains data consistency
+
+**Example Scenario:**
+
+```
+Initial Schema (Day 1):
+  seller_id, item_id, units_sold, revenue, marketplace_price, sale_date
+
+Evolved Schema (Day 30):
+  seller_id, item_id, units_sold, revenue, marketplace_price,
+  sale_date, discount_percentage, promotion_type  ← New columns
+
+Our Pipeline Behavior:
+- Hudi automatically detects new columns
+- Merges schema with existing table
+- Writes new data with all columns
+- Old data readable with NULL for new columns
+- No ETL code changes needed
+```
+
+This schema evolution capability is critical for production data pipelines where source systems evolve over time.
 
 ### Environment Detection
 
