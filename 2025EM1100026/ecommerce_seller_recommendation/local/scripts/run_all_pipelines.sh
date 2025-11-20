@@ -12,7 +12,7 @@ echo "Student: 2025EM1100026"
 echo "=============================================="
 echo ""
 
-BASE_DIR="/home/user/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local"
+BASE_DIR="/workspaces/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local"
 SCRIPTS_DIR="$BASE_DIR/scripts"
 
 # Step 1: Seller Catalog ETL

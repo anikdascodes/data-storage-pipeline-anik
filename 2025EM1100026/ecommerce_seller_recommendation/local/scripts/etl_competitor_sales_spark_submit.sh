@@ -4,7 +4,7 @@
 # Student: MSc Data Science & AI, Roll No: 2025EM1100026
 
 # Set the base directory
-BASE_DIR="/home/user/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local"
+BASE_DIR="/workspaces/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local"
 
 echo "Starting Competitor Sales ETL Pipeline..."
 echo "Base Directory: $BASE_DIR"
