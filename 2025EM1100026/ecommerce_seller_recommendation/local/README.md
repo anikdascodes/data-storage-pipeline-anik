@@ -1,298 +1,250 @@
-# E-commerce Top-Seller Items Recommendation System
+# Assignment #1: E-commerce Top-Seller Items Recommendation System
 
-**Assignment #1: Data Storage and Pipeline**
-**Student:** MSc Data Science & AI
-**Roll No:** 2025EM1100026
+## Student Information
 
----
-
-## Table of Contents
-
-1. [Project Overview](#project-overview)
-2. [Architecture](#architecture)
-3. [Project Structure](#project-structure)
-4. [Prerequisites](#prerequisites)
-5. [Setup Instructions](#setup-instructions)
-6. [Execution Guide](#execution-guide)
-7. [Pipeline Details](#pipeline-details)
-8. [Data Quality Checks](#data-quality-checks)
-9. [Output](#output)
-10. [Troubleshooting](#troubleshooting)
+**Name:** Anik Das
+**Roll Number:** 2025EM1100026
+**Course:** Data Storage and Pipeline
+**Program:** MSc Data Science & AI
 
 ---
 
 ## Project Overview
 
-This project implements an end-to-end data pipeline for an e-commerce recommendation system that helps sellers identify top-selling items they should add to their catalog. The system:
-
-- Ingests data from 3 sources (Seller Catalog, Company Sales, Competitor Sales)
-- Applies data cleaning and quality checks
-- Uses Apache Hudi for incremental data storage
-- Implements medallion architecture (Bronze → Silver → Gold)
-- Generates actionable recommendations with expected revenue calculations
+This project implements a recommendation system for sellers on an e-commerce platform. The system analyzes internal sales data and competitor data to recommend top-selling items that sellers currently don't have in their catalogs, helping them increase revenue and profit.
 
 ### Key Features
 
-- **ETL Pipelines:** 3 separate pipelines for each data source
-- **Data Quality:** Comprehensive DQ checks with quarantine zone for bad data
-- **Apache Hudi:** Schema evolution and incremental upserts
-- **Medallion Architecture:** Bronze (raw) → Silver (cleaned) → Gold (consumption-ready)
-- **Dockerized:** Complete production-ready environment
-- **uv Package Manager:** Fast Python dependency management
-
----
-
-## Architecture
-
-```
-Raw Data (CSV)
-    ↓
-ETL Pipeline 1 (Seller Catalog)
-    ↓ (Clean, Validate, DQ Checks)
-    ↓
-Hudi Table 1 ← Quarantine Zone
-    ↓
-
-ETL Pipeline 2 (Company Sales)
-    ↓ (Clean, Validate, DQ Checks)
-    ↓
-Hudi Table 2 ← Quarantine Zone
-    ↓
-
-ETL Pipeline 3 (Competitor Sales)
-    ↓ (Clean, Validate, DQ Checks)
-    ↓
-Hudi Table 3 ← Quarantine Zone
-    ↓
-
-Consumption Layer
-    ↓ (Top-selling analysis, Recommendations)
-    ↓
-CSV Output (Recommendations)
-```
+- **3 ETL Pipelines** for data ingestion, cleaning, and validation
+- **Apache Hudi 0.15.0** for incremental data lake storage with schema evolution
+- **Medallion Architecture** with Bronze → Silver → Gold layers
+- **Data Quality Checks** with quarantine zone for invalid records
+- **Consumption Layer** for generating actionable recommendations
+- **Dockerized** for easy deployment and testing
 
 ---
 
 ## Project Structure
 
+As per assignment requirements:
+
 ```
 2025EM1100026/ecommerce_seller_recommendation/local/
 │
 ├── configs/
-│   └── ecomm_prod.yml              # YAML configuration (paths only)
+│   └── ecomm_prod.yml              # Configuration file (input/output paths only)
 │
 ├── src/
-│   ├── etl_seller_catalog.py      # ETL for seller catalog
-│   ├── etl_company_sales.py       # ETL for company sales
-│   ├── etl_competitor_sales.py    # ETL for competitor sales
-│   └── consumption_recommendation.py  # Consumption layer
+│   ├── etl_seller_catalog.py       # ETL pipeline for seller catalog data
+│   ├── etl_company_sales.py        # ETL pipeline for company sales data
+│   ├── etl_competitor_sales.py     # ETL pipeline for competitor sales data
+│   └── consumption_recommendation.py # Consumption layer for recommendations
 │
 ├── scripts/
-│   ├── etl_seller_catalog_spark_submit.sh
-│   ├── etl_company_sales_spark_submit.sh
-│   ├── etl_competitor_sales_spark_submit.sh
-│   └── consumption_recommendation_spark_submit.sh
+│   ├── etl_seller_catalog_spark_submit.sh       # Spark submit for seller catalog
+│   ├── etl_company_sales_spark_submit.sh        # Spark submit for company sales
+│   ├── etl_competitor_sales_spark_submit.sh     # Spark submit for competitor sales
+│   ├── consumption_recommendation_spark_submit.sh # Spark submit for consumption
+│   └── run_all_pipelines.sh                     # Helper: Run all 4 pipelines
 │
 ├── raw/                            # Input CSV files
 │   ├── seller_catalog/
 │   ├── company_sales/
 │   └── competitor_sales/
 │
-├── processed/                      # Hudi tables and output CSV
+├── processed/                      # Output: Hudi tables and recommendation CSV
 │   ├── seller_catalog_hudi/
 │   ├── company_sales_hudi/
 │   ├── competitor_sales_hudi/
 │   └── recommendations_csv/
 │
-├── quarantine/                     # Bad data records
+├── quarantine/                     # Invalid records with failure reasons
 │   ├── seller_catalog/
 │   ├── company_sales/
 │   └── competitor_sales/
 │
-├── Dockerfile                      # Docker image definition
-├── docker compose.yml              # Docker orchestration
-├── pyproject.toml                  # uv project configuration
+├── Dockerfile                      # Docker image configuration
+├── docker-compose.yml              # Docker orchestration for easy testing
+├── docker-entrypoint.sh            # Auto-execution script
+├── verify_outputs.sh               # Output verification
 ├── requirements.txt                # Python dependencies
 └── README.md                       # This file
 ```
 
 ---
 
-## Prerequisites
+## Technology Stack
 
-### Option 1: Docker (Recommended)
-
-- Docker 20.10+
-- Docker Compose 1.29+
-- 4GB+ RAM available for container
-
-### Option 2: Local Installation
-
-- Python 3.8+
-- Java 11 (OpenJDK)
-- Apache Spark 3.5.0
-- uv package manager
-- 8GB+ RAM
+- **Apache Spark 3.5.0** - Distributed data processing
+- **Apache Hudi 0.15.0** - Incremental data lake with ACID transactions
+- **PySpark** - Python API for Spark
+- **Docker** - Containerization
+- **Python 3.10+** - Core programming language
 
 ---
 
-## Setup Instructions
+## How to Run the Assignment
 
-### Option 1: Using Docker (Recommended)
+### ⭐ Option 1: Using Docker (Recommended for Reviewers)
 
-1. **Clone the repository:**
-   ```bash
-   cd /path/to/project
-   cd 2025EM1100026/ecommerce_seller_recommendation/local
-   ```
+This is the **easiest and fastest** way to run and test the complete assignment. Everything runs automatically with one command!
 
-2. **Build Docker image:**
-   ```bash
-   docker compose build
-   ```
-   This will:
-   - Install Java 11
-   - Install Apache Spark 3.5.0
-   - Install Python and uv
-   - Install all dependencies from requirements.txt
+#### Prerequisites
+- Docker installed
+- Docker Compose installed
 
-3. **Start the container:**
-   ```bash
-   docker compose up -d
-   ```
+#### Steps
 
-4. **Access the container:**
-   ```bash
-   docker compose exec ecommerce-recommendation bash
-   ```
+**1. Navigate to the project directory:**
+```bash
+cd 2025EM1100026/ecommerce_seller_recommendation/local
+```
 
-### Option 2: Local Installation
+**2. Run the complete pipeline (ONE COMMAND!):**
+```bash
+docker compose up --build
+```
 
-1. **Install Java 11:**
-   ```bash
-   sudo apt-get update
-   sudo apt-get install openjdk-11-jdk
-   export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
-   ```
+This will:
+- Build the Docker image with all dependencies (Spark 3.5.0, Java 11, Python, Hudi packages)
+- Run all 3 ETL pipelines automatically
+- Run the consumption layer to generate recommendations
+- Verify all outputs
+- Display detailed execution logs
 
-2. **Install Apache Spark 3.5.0:**
-   ```bash
-   wget https://archive.apache.org/dist/spark/spark-3.5.0/spark-3.5.0-bin-hadoop3.tgz
-   tar -xzf spark-3.5.0-bin-hadoop3.tgz
-   sudo mv spark-3.5.0-bin-hadoop3 /opt/spark
-   export SPARK_HOME=/opt/spark
-   export PATH=$PATH:$SPARK_HOME/bin
-   ```
+**3. Expected output:**
+```
+================================================================
+  E-commerce Recommendation System - Docker Container
+  Student Roll No: 2025EM1100026
+================================================================
 
-3. **Install uv:**
-   ```bash
-   curl -LsSf https://astral.sh/uv/install.sh | sh
-   source $HOME/.cargo/env
-   ```
+✓ All pre-flight checks passed!
 
-4. **Install Python dependencies:**
-   ```bash
-   cd 2025EM1100026/ecommerce_seller_recommendation/local
-   uv venv
-   source .venv/bin/activate
-   uv pip install -r requirements.txt
-   ```
+[1/4] Running Seller Catalog ETL Pipeline...
+✓ Seller Catalog ETL completed successfully
+
+[2/4] Running Company Sales ETL Pipeline...
+✓ Company Sales ETL completed successfully
+
+[3/4] Running Competitor Sales ETL Pipeline...
+✓ Competitor Sales ETL completed successfully
+
+[4/4] Running Recommendations Pipeline...
+✓ Recommendations Pipeline completed successfully
+
+================================================================
+✓ All 4 pipelines completed successfully!
+================================================================
+```
+
+**4. Verify outputs (optional):**
+```bash
+docker compose exec ecommerce-recommendation bash /app/verify_outputs.sh
+```
+
+**5. Clean up:**
+```bash
+docker compose down
+```
+
+**Total Execution Time:** 15-20 minutes (including build time)
 
 ---
 
-## Execution Guide
+### Option 2: Manual Execution (Local Environment)
 
-### Step 1: Run ETL Pipelines (Execute in Order)
+If you prefer to run without Docker:
 
-**Important:** Execute the ETL pipelines in sequence before running the consumption layer.
+#### Prerequisites
+- Apache Spark 3.5.0 installed
+- Java 11+ installed
+- Python 3.10+ installed
+- Required packages: `pyspark`, `pyyaml`
 
-#### 1.1 Seller Catalog ETL
+#### Installation
+
+**1. Install Python dependencies:**
 ```bash
-bash /home/user/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local/scripts/etl_seller_catalog_spark_submit.sh
+pip install -r requirements.txt
 ```
 
-**What it does:**
-- Reads `raw/seller_catalog/seller_catalog_clean.csv`
-- Cleans data (trim, normalize, deduplicate)
-- Applies DQ checks
-- Writes valid data to `processed/seller_catalog_hudi/`
-- Writes invalid data to `quarantine/seller_catalog/`
-
-#### 1.2 Company Sales ETL
+**2. Set environment variables:**
 ```bash
-bash /home/user/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local/scripts/etl_company_sales_spark_submit.sh
+export SPARK_HOME=/path/to/spark-3.5.0
+export PATH=$SPARK_HOME/bin:$PATH
 ```
 
-**What it does:**
-- Reads `raw/company_sales/company_sales_clean.csv`
-- Cleans data (trim, type conversion)
-- Applies DQ checks
-- Writes valid data to `processed/company_sales_hudi/`
-- Writes invalid data to `quarantine/company_sales/`
+#### Running Pipelines
 
-#### 1.3 Competitor Sales ETL
+**Run all pipelines at once:**
 ```bash
-bash /home/user/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local/scripts/etl_competitor_sales_spark_submit.sh
+cd scripts
+bash run_all_pipelines.sh
 ```
 
-**What it does:**
-- Reads `raw/competitor_sales/competitor_sales_clean.csv`
-- Cleans data (trim, normalize, type conversion)
-- Applies DQ checks
-- Writes valid data to `processed/competitor_sales_hudi/`
-- Writes invalid data to `quarantine/competitor_sales/`
+**Or run each pipeline separately:**
 
-### Step 2: Run Consumption Layer
-
+**Step 1: Run ETL Pipelines (in order)**
 ```bash
-bash /home/user/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local/scripts/consumption_recommendation_spark_submit.sh
+cd scripts
+bash etl_seller_catalog_spark_submit.sh
+bash etl_company_sales_spark_submit.sh
+bash etl_competitor_sales_spark_submit.sh
 ```
 
-**What it does:**
-- Reads 3 Hudi tables
-- Identifies top 10 selling items per category
-- Finds items missing from each seller's catalog
-- Calculates expected revenue
-- Writes recommendations to `processed/recommendations_csv/seller_recommend_data.csv`
-
-### Alternative: Direct spark-submit Commands
-
-If you prefer to run spark-submit directly:
-
+**Step 2: Run Consumption Layer**
 ```bash
-# Seller Catalog
-spark-submit \
-  --packages org.apache.hudi:hudi-spark3.5-bundle_2.12:0.15.0,org.apache.hadoop:hadoop-aws:3.3.4,com.amazonaws:aws-java-sdk-bundle:1.12.262 \
-  --conf spark.serializer=org.apache.spark.serializer.KryoSerializer \
-  --conf spark.sql.legacy.timeParserPolicy=LEGACY \
-  /home/user/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local/src/etl_seller_catalog.py \
-  --config /home/user/data-storage-pipeline-anik/2025EM1100026/ecommerce_seller_recommendation/local/configs/ecomm_prod.yml
-
-# Repeat for other pipelines...
+bash consumption_recommendation_spark_submit.sh
 ```
+
+---
+
+## Configuration File
+
+The `configs/ecomm_prod.yml` contains all input and output paths (as per assignment requirements):
+
+```yaml
+seller_catalog:
+  input_path: "/app/raw/seller_catalog/seller_catalog_clean.csv"
+  hudi_output_path: "/app/processed/seller_catalog_hudi/"
+  quarantine_path: "/app/quarantine/seller_catalog/"
+
+company_sales:
+  input_path: "/app/raw/company_sales/company_sales_clean.csv"
+  hudi_output_path: "/app/processed/company_sales_hudi/"
+  quarantine_path: "/app/quarantine/company_sales/"
+
+competitor_sales:
+  input_path: "/app/raw/competitor_sales/competitor_sales_clean.csv"
+  hudi_output_path: "/app/processed/competitor_sales_hudi/"
+  quarantine_path: "/app/quarantine/competitor_sales/"
+
+recommendation:
+  seller_catalog_hudi: "/app/processed/seller_catalog_hudi/"
+  company_sales_hudi: "/app/processed/company_sales_hudi/"
+  competitor_sales_hudi: "/app/processed/competitor_sales_hudi/"
+  output_csv: "/app/processed/recommendations_csv/seller_recommend_data.csv"
+```
+
+**Note:** Paths use `/app/` for Docker. Scripts auto-detect environment and adjust paths for local execution.
 
 ---
 
 ## Pipeline Details
 
-### ETL Pipeline 1: Seller Catalog
+### 1. ETL Pipeline: Seller Catalog (`etl_seller_catalog.py`)
 
-**Input Schema:**
-- `seller_id` (STRING)
-- `item_id` (STRING)
-- `item_name` (STRING)
-- `category` (STRING)
-- `marketplace_price` (DOUBLE)
-- `stock_qty` (INT)
+**Input:** `raw/seller_catalog/seller_catalog_clean.csv`
 
-**Cleaning Steps:**
-1. Trim whitespace in all string columns
-2. Normalize `item_name` to Title Case
-3. Normalize `category` to standard labels
-4. Fill missing `stock_qty` with 0
-5. Remove duplicates by (seller_id, item_id)
+**Data Cleaning:**
+- Trim whitespace in all string columns
+- Normalize item_name to Title Case
+- Standardize category labels
+- Remove duplicates based on (seller_id + item_id)
+- Convert marketplace_price → DOUBLE, stock_qty → INT
 
-**DQ Checks:**
+**Data Quality Checks (6 rules):**
 - seller_id IS NOT NULL
 - item_id IS NOT NULL
 - marketplace_price >= 0
@@ -300,43 +252,45 @@ spark-submit \
 - item_name IS NOT NULL
 - category IS NOT NULL
 
-### ETL Pipeline 2: Company Sales
+**Outputs:**
+- Valid records → `processed/seller_catalog_hudi/` (Hudi table, overwrite mode)
+- Invalid records → `quarantine/seller_catalog/` (with failure reasons)
 
-**Input Schema:**
-- `item_id` (STRING)
-- `units_sold` (INT)
-- `revenue` (DOUBLE)
-- `sale_date` (DATE)
+---
 
-**Cleaning Steps:**
-1. Trim strings
-2. Fill missing numeric fields with 0
-3. Round revenue to 2 decimals
-4. Remove duplicates by item_id
+### 2. ETL Pipeline: Company Sales (`etl_company_sales.py`)
 
-**DQ Checks:**
+**Input:** `raw/company_sales/company_sales_clean.csv`
+
+**Data Cleaning:**
+- Trim strings
+- Convert units_sold → INT, revenue → DOUBLE, sale_date → DATE
+- Remove duplicates based on item_id
+- Standardize date format
+
+**Data Quality Checks (4 rules):**
 - item_id IS NOT NULL
 - units_sold >= 0
 - revenue >= 0
 - sale_date IS NOT NULL AND <= current_date()
 
-### ETL Pipeline 3: Competitor Sales
+**Outputs:**
+- Valid records → `processed/company_sales_hudi/` (Hudi table, overwrite mode)
+- Invalid records → `quarantine/company_sales/`
 
-**Input Schema:**
-- `seller_id` (STRING)
-- `item_id` (STRING)
-- `units_sold` (INT)
-- `revenue` (DOUBLE)
-- `marketplace_price` (DOUBLE)
-- `sale_date` (DATE)
+---
 
-**Cleaning Steps:**
-1. Trim strings
-2. Fill missing numeric fields with 0
-3. Round revenue and price to 2 decimals
-4. Remove duplicates by (seller_id, item_id)
+### 3. ETL Pipeline: Competitor Sales (`etl_competitor_sales.py`)
 
-**DQ Checks:**
+**Input:** `raw/competitor_sales/competitor_sales_clean.csv`
+
+**Data Cleaning:**
+- Trim strings and normalize casing
+- Convert units_sold → INT, revenue → DOUBLE, marketplace_price → DOUBLE
+- Convert sale_date → DATE
+- Fill missing numeric fields with 0
+
+**Data Quality Checks (6 rules):**
 - item_id IS NOT NULL
 - seller_id IS NOT NULL
 - units_sold >= 0
@@ -344,62 +298,31 @@ spark-submit \
 - marketplace_price >= 0
 - sale_date IS NOT NULL AND <= current_date()
 
-### Consumption Layer: Recommendations
-
-**Business Logic:**
-
-1. **Aggregate Sales Data:**
-   - Aggregate company sales by item_id
-   - Aggregate competitor sales by item_id
-   - Combine to get total units sold
-
-2. **Identify Top-Selling Items:**
-   - Rank items by category
-   - Select top 10 per category
-
-3. **Generate Recommendations:**
-   - For each seller, find missing items from top-selling list
-   - Calculate:
-     - `expected_units_sold = total_units_sold / num_sellers`
-     - `expected_revenue = expected_units_sold * market_price`
-
-4. **Output:**
-   - CSV with columns: seller_id, item_id, item_name, category, market_price, expected_units_sold, expected_revenue
+**Outputs:**
+- Valid records → `processed/competitor_sales_hudi/` (Hudi table, overwrite mode)
+- Invalid records → `quarantine/competitor_sales/`
 
 ---
 
-## Data Quality Checks
+### 4. Consumption Layer (`consumption_recommendation.py`)
 
-All invalid records are moved to the quarantine zone with the following information:
+**Inputs:** Reads 3 Hudi tables from ETL pipelines
 
-- `dataset_name`: Source dataset name
-- Original record fields
-- `dq_failure_reason`: Comma-separated list of DQ failures
-- `quarantine_timestamp`: When the record was quarantined
+**Data Transformation:**
+- Aggregate company sales to find top-selling items per category
+- Aggregate competitor sales to find top-selling items in market
+- Compare each seller's catalog with top-selling items
+- Identify missing items per seller
 
-Example quarantine reasons:
-- `seller_id_null`
-- `item_id_null`
-- `price_invalid`
-- `stock_invalid`
-- `sale_date_invalid`
+**Recommendation Calculation:**
 
----
+For each missing item:
+```
+expected_units_sold = total_units_sold / number_of_sellers_selling_item
+expected_revenue = expected_units_sold × marketplace_price
+```
 
-## Output
-
-### Hudi Tables (Parquet format)
-
-Located in `processed/`:
-- `seller_catalog_hudi/`
-- `company_sales_hudi/`
-- `competitor_sales_hudi/`
-
-### Recommendations CSV
-
-Located in `processed/recommendations_csv/seller_recommend_data.csv`
-
-**Columns:**
+**Output Columns:**
 - seller_id
 - item_id
 - item_name
@@ -408,90 +331,172 @@ Located in `processed/recommendations_csv/seller_recommend_data.csv`
 - expected_units_sold
 - expected_revenue
 
+**Output:** `processed/recommendations_csv/seller_recommend_data.csv` (CSV, overwrite mode)
+
+---
+
+## Spark Submit Command Format
+
+All pipelines use the following format (as per assignment requirements):
+
+```bash
+spark-submit \
+  --packages org.apache.hudi:hudi-spark3.5-bundle_2.12:0.15.0,org.apache.hadoop:hadoop-aws:3.3.4,com.amazonaws:aws-java-sdk-bundle:1.12.262 \
+  --conf spark.serializer=org.apache.spark.serializer.KryoSerializer \
+  --conf spark.sql.legacy.timeParserPolicy=LEGACY \
+  <path-to-python-file>.py \
+  --config configs/ecomm_prod.yml
+```
+
+**Spark Session Configuration:**
+```python
+def get_spark_session(app_name: str) -> SparkSession:
+    spark = (
+        SparkSession.builder
+        .appName(app_name)
+        .config("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
+        .config("spark.sql.legacy.timeParserPolicy", "LEGACY")
+        .getOrCreate()
+    )
+    spark.sparkContext.setLogLevel("WARN")
+    return spark
+```
+
+---
+
+## Data Quality & Quarantine Zone
+
+All records that fail DQ checks are moved to the quarantine zone with:
+- Original record data
+- `dq_failure_reason` column (e.g., "price_negative", "missing_item_id")
+- `quarantine_timestamp`
+
+This ensures data integrity and allows investigation of problematic records.
+
+---
+
+## Output Files
+
+After successful execution:
+
+### 1. Hudi Tables (ETL Outputs)
+```
+processed/
+├── seller_catalog_hudi/     # Apache Hudi table (Parquet format)
+├── company_sales_hudi/      # Apache Hudi table (Parquet format)
+└── competitor_sales_hudi/   # Apache Hudi table (Parquet format)
+```
+
+### 2. Recommendations CSV (Consumption Output)
+```
+processed/recommendations_csv/
+└── seller_recommend_data.csv  # Top recommendations per seller
+```
+
+### 3. Quarantine Zone
+```
+quarantine/
+├── seller_catalog/          # Invalid seller catalog records
+├── company_sales/           # Invalid company sales records
+└── competitor_sales/        # Invalid competitor sales records
+```
+
+---
+
+## Assignment Requirements Checklist
+
+### ✅ ETL Ingestion (15 Marks)
+- ✅ Read input datasets via YAML-configurable pipeline
+- ✅ Apache Hudi for schema evolution and incremental upserts
+- ✅ Data cleaning implemented for all 3 datasets
+- ✅ Data Quality checks with quarantine zone
+- ✅ Quarantine zone includes failure reasons
+- ✅ Medallion architecture (Bronze → Silver → Gold)
+- ✅ 3 separate pipelines for 3 datasets
+- ✅ Final output: 3 Hudi tables with overwrite mode
+
+### ✅ Consumption Layer (5 Marks)
+- ✅ Medallion architecture followed
+- ✅ Reads 3 input Hudi tables
+- ✅ Data transformations and aggregations
+- ✅ Recommendation calculation with expected revenue
+- ✅ Output to CSV with overwrite mode
+
+### ✅ Configuration (Required)
+- ✅ `ecomm_prod.yml` contains only input/output paths
+- ✅ Follows assignment sample format
+
+### ✅ Project Structure (Required)
+- ✅ Follows exact structure specified in assignment
+- ✅ All required files present in correct locations
+
+---
+
+## Technical Implementation Details
+
+**Hudi Configuration:**
+- Table Type: COPY_ON_WRITE (COW)
+- Operation: Upsert (idempotent writes)
+- Key Generator: NonpartitionedKeyGenerator
+- Write Mode: Overwrite (for final ETL output)
+
+**Spark Configuration:**
+- Serializer: KryoSerializer
+- Time Parser Policy: LEGACY
+- Log Level: WARN
+
+**Environment Detection:**
+- Scripts auto-detect Docker (`/app/`) vs local environment
+- Paths adjust automatically based on runtime environment
+
 ---
 
 ## Troubleshooting
 
-### Issue 1: Out of Memory Error
+### Docker build takes long
+**Solution:** First build may take 10-12 minutes. Subsequent builds use cache (~3 minutes).
 
-**Solution:** Increase Spark memory:
-```bash
-spark-submit --driver-memory 4g --executor-memory 4g ...
-```
+### PATH_NOT_FOUND errors
+**Solution:** Ensure raw data files exist in `raw/` folder before running.
 
-### Issue 2: Hudi Table Not Found
+### Out of memory errors
+**Solution:** Increase Docker memory in Docker Desktop settings (recommend 4GB+).
 
-**Solution:** Ensure ETL pipelines ran successfully before consumption layer.
-
-### Issue 3: Permission Denied
-
-**Solution:** Make scripts executable:
-```bash
-chmod +x scripts/*.sh
-```
-
-### Issue 4: Java Not Found
-
-**Solution:** Set JAVA_HOME:
-```bash
-export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
-```
-
-### Issue 5: PySpark Import Error
-
-**Solution:** Set PYTHONPATH:
-```bash
-export PYTHONPATH=$SPARK_HOME/python:$SPARK_HOME/python/lib/py4j-0.10.9.7-src.zip
-```
+### Permission denied on scripts
+**Solution:** Run `chmod +x scripts/*.sh` to make scripts executable.
 
 ---
 
-## Configuration
+## Why Docker?
 
-The `configs/ecomm_prod.yml` file contains all paths. Update paths as needed for your environment.
+While not required by the assignment, Docker is included to:
+- **For Reviewers:** Test the complete assignment with a single command
+- **For Students:** Ensure consistent environment across different machines
+- **For Production:** Production-ready deployment approach
 
-**Note:** The configuration follows the assignment requirement of containing only input/output paths.
-
----
-
-## Testing with Dirty Data
-
-To test with dirty datasets, update `configs/ecomm_prod.yml`:
-
-```yaml
-seller_catalog:
-  input_path: "/path/to/raw/seller_catalog_dirty.csv"
-```
-
-Then run the pipelines. Invalid records will be quarantined.
-
----
-
-## Performance Considerations
-
-- **Partitioning:** For large datasets, consider partitioning Hudi tables
-- **Caching:** Cache DataFrames if used multiple times
-- **Coalesce:** Adjust number of partitions based on data size
-- **Broadcast Joins:** Use for small lookup tables
-
----
-
-## Future Enhancements
-
-1. **Incremental Processing:** Support daily incremental loads
-2. **Data Lineage:** Track data lineage and transformations
-3. **Monitoring:** Add metrics and monitoring dashboards
-4. **Orchestration:** Use Airflow for pipeline scheduling
-5. **S3 Support:** Add S3 support for cloud deployment
+The core assignment (Python code, configs, scripts) fully complies with the requirements and can run without Docker.
 
 ---
 
 ## Contact
 
-**Student:** 2025EM1100026
-**Course:** MSc Data Science & AI
-**Assignment:** Data Storage and Pipeline - Assignment #1
+**Student:** Anik Das
+**Roll No:** 2025EM1100026
+**Program:** MSc Data Science & AI
 
 ---
 
-**Note:** This is a production-ready implementation with complete error handling, logging, and data quality checks. The system is designed to be scalable, maintainable, and follows best practices for data engineering.
+## Acknowledgments
+
+This assignment demonstrates:
+- Apache Spark for distributed data processing
+- Apache Hudi for data lake management
+- Medallion architecture for data pipelines
+- Data quality frameworks with quarantine patterns
+- Production-ready ETL implementations
+
+---
+
+**Assignment Submission Date:** November 2025
+**Version:** 1.0
+**Status:** ✅ Ready for Submission

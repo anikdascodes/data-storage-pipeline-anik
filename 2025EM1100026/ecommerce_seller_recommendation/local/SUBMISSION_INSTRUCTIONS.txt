@@ -1,0 +1,142 @@
+================================================================================
+  Assignment #1: E-commerce Recommendation System
+  Student: Anik Das
+  Roll No: 2025EM1100026
+================================================================================
+
+SUBMISSION CHECKLIST
+================================================================================
+
+✅ All required files present per assignment structure:
+   - configs/ecomm_prod.yml
+   - src/ (4 Python files)
+   - scripts/ (4 spark-submit scripts + 1 helper)
+   - README.md
+
+✅ Docker files included for easy testing:
+   - Dockerfile
+   - docker-compose.yml
+   - docker-entrypoint.sh
+   - verify_outputs.sh
+
+✅ Input data files:
+   - raw/seller_catalog/seller_catalog_clean.csv
+   - raw/company_sales/company_sales_clean.csv
+   - raw/competitor_sales/competitor_sales_clean.csv
+
+✅ Configuration updated for Docker compatibility
+✅ All paths tested and working
+✅ README.md updated with complete instructions
+
+
+HOW TO CREATE SUBMISSION ZIP
+================================================================================
+
+FROM THIS DIRECTORY:
+  cd /home/user/data-storage-pipeline-anik
+
+CREATE ZIP:
+  zip -r 2025EM1100026_assignment1.zip 2025EM1100026/
+
+OR (excluding unnecessary files):
+  cd 2025EM1100026/ecommerce_seller_recommendation/local
+  zip -r ../../../2025EM1100026_assignment1.zip . \
+      -x "processed/*" "quarantine/*" "*.pyc" "__pycache__/*" ".git/*"
+
+
+WHAT GETS SUBMITTED
+================================================================================
+
+The zip file should contain:
+
+2025EM1100026/
+└── ecommerce_seller_recommendation/
+    └── local/
+        ├── configs/
+        │   └── ecomm_prod.yml
+        ├── src/
+        │   ├── etl_seller_catalog.py
+        │   ├── etl_company_sales.py
+        │   ├── etl_competitor_sales.py
+        │   └── consumption_recommendation.py
+        ├── scripts/
+        │   ├── etl_seller_catalog_spark_submit.sh
+        │   ├── etl_company_sales_spark_submit.sh
+        │   ├── etl_competitor_sales_spark_submit.sh
+        │   ├── consumption_recommendation_spark_submit.sh
+        │   └── run_all_pipelines.sh
+        ├── raw/
+        │   ├── seller_catalog/seller_catalog_clean.csv
+        │   ├── company_sales/company_sales_clean.csv
+        │   └── competitor_sales/competitor_sales_clean.csv
+        ├── Dockerfile
+        ├── docker-compose.yml
+        ├── docker-entrypoint.sh
+        ├── verify_outputs.sh
+        ├── requirements.txt
+        └── README.md
+
+
+FOR REVIEWERS TO TEST
+================================================================================
+
+After unzipping, reviewers can test with ONE COMMAND:
+
+  cd 2025EM1100026/ecommerce_seller_recommendation/local
+  docker compose up --build
+
+This will:
+  1. Build Docker image with all dependencies
+  2. Run all 3 ETL pipelines automatically
+  3. Run consumption layer for recommendations
+  4. Verify all outputs
+  5. Show success message
+
+Total time: 15-20 minutes
+
+
+VERIFICATION BEFORE SUBMISSION
+================================================================================
+
+✅ Check 1: README.md has student name and roll number
+✅ Check 2: configs/ecomm_prod.yml uses /app/ paths (for Docker)
+✅ Check 3: All 4 Python files in src/ folder
+✅ Check 4: All 4 spark-submit scripts in scripts/ folder
+✅ Check 5: Raw CSV files exist in raw/ folders
+✅ Check 6: Docker files present
+✅ Check 7: No extra MD files (only README.md)
+
+
+ASSIGNMENT REQUIREMENTS MET
+================================================================================
+
+ETL Ingestion (15 Marks):
+  ✅ YAML-configurable pipeline
+  ✅ Apache Hudi for schema evolution
+  ✅ Data cleaning for all 3 datasets
+  ✅ Data Quality checks implemented
+  ✅ Quarantine zone with failure reasons
+  ✅ Medallion architecture
+  ✅ 3 separate pipelines
+  ✅ Hudi tables with overwrite mode
+
+Consumption Layer (5 Marks):
+  ✅ Reads 3 Hudi tables
+  ✅ Data transformations
+  ✅ Recommendation calculation
+  ✅ Expected revenue calculation
+  ✅ CSV output with overwrite mode
+
+
+FINAL STATUS
+================================================================================
+
+✅ Assignment complete and ready for submission
+✅ All code tested and working
+✅ Docker execution tested and verified
+✅ Configuration files properly set up
+✅ Documentation complete
+
+Good luck with your submission!
+
+================================================================================
