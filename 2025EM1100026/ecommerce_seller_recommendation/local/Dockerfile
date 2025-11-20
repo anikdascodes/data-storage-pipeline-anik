@@ -30,11 +30,12 @@ RUN apt-get update && apt-get install -y \
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 ENV PATH="/root/.cargo/bin:$PATH"
 
-# Download and install Apache Spark
-RUN wget -q https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz \
-    && tar -xzf spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz \
-    && mv spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION} ${SPARK_HOME} \
-    && rm spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz
+# Download and install Apache Spark (with timeout and fallback)
+RUN wget --timeout=30 --tries=3 -q https://dlcdn.apache.org/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz || \
+    wget --timeout=30 --tries=3 -q https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz && \
+    tar -xzf spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz && \
+    mv spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION} ${SPARK_HOME} && \
+    rm spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz
 
 # Set working directory
 WORKDIR /app
@@ -43,8 +44,9 @@ WORKDIR /app
 COPY pyproject.toml /app/
 COPY requirements.txt /app/
 
-# Install Python dependencies using uv
-RUN uv pip install --system -r requirements.txt
+# Install Python dependencies using pip (uv alternative for reliability)
+RUN python3 -m pip install --upgrade pip && \
+    python3 -m pip install -r requirements.txt
 
 # Copy the entire project
 COPY . /app/
